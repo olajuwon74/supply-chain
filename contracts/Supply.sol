@@ -18,10 +18,14 @@ contract Supply{
         uint128 totalReceived;
         uint96 totalSold;
         uint32 amountRemaianing;
+        bool  added;
     }
+
     uint public index = 1;
 
     mapping (uint => Office) public officeTracker;
+    mapping (bool => Office) public addressValidity;
+
 
     modifier onlySuperAdmin(){
         require(msg.sender == superAdmin);
@@ -32,11 +36,26 @@ contract Supply{
         Office storage office = officeTracker[index];
         office.officeLocation = _location;
         office.accredictedAddresses = _accredictedAddresses;
+        office.added = true;
         index = index + 1;
     }
 
-    function update(uint128 _totalReceived, uint _totalSold, uint32 _amountRemaianing) external {
+    function update(uint128 _totalReceived, uint96 _totalSold, uint32 _amountRemaianing) external {
         Office storage office = officeTracker[index];
-        if(msg.sender = )
+        assert(checkMember());
+        office.totalReceived = office.totalReceived + _totalReceived;
+        office.totalSold = office.totalSold + _totalSold;
+        office.amountRemaianing = office.amountRemaianing + _amountRemaianing;
+
     }
+
+    function checkMember() internal view returns (bool status) {
+        status;
+        Office storage office = officeTracker[index];
+        for (uint256 i; i < office.accredictedAddresses.length; i++) {
+            if (office.accredictedAddresses[i] == msg.sender) status = true;
+        }
+    }
+
+
 }
