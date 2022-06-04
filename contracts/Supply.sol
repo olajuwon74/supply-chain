@@ -45,8 +45,7 @@ contract Supply{
         assert(checkMember());
         office.totalReceived = office.totalReceived + _totalReceived;
         office.totalSold = office.totalSold + _totalSold;
-        office.amountRemaianing = office.amountRemaianing + _amountRemaianing;
-
+        office.amountRemaianing = office.totalReceived - office.totalSold;
     }
 
     function checkMember() internal view returns (bool status) {
