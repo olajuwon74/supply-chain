@@ -18,13 +18,20 @@ contract Supply{
         uint128 totalReceived;
         uint96 totalSold;
         uint32 amountRemaianing;
-        bool  added;
+    }
+
+    
+    struct Headquater {
+        uint256 totalReceived;
+        uint128 distributed;
+        uint128 amountRemaianing;
     }
 
     uint public index = 1;
 
     mapping (uint => Office) public officeTracker;
-    mapping (bool => Office) public addressValidity;
+    mapping (address => Headquater) public headquaterTracker;
+    event Approver(address approversAddress);
 
 
     modifier onlySuperAdmin(){
@@ -36,16 +43,29 @@ contract Supply{
         Office storage office = officeTracker[index];
         office.officeLocation = _location;
         office.accredictedAddresses = _accredictedAddresses;
-        office.added = true;
         index = index + 1;
     }
 
-    function update(uint128 _totalReceived, uint96 _totalSold, uint32 _amountRemaianing) external {
+    function update(uint128 _totalReceived, uint96 _totalSold) external {
         Office storage office = officeTracker[index];
         assert(checkMember());
-        office.totalReceived = office.totalReceived + _totalReceived;
-        office.totalSold = office.totalSold + _totalSold;
-        office.amountRemaianing = office.totalReceived - office.totalSold;
+        uint128 officeTotal = office.totalReceived + _totalReceived;
+        office.totalReceived = officeTotal;
+        uint96 officeSold = office.totalSold + _totalSold;
+        office.totalSold = officeSold;
+        uint128 remain = uint128 (officeTotal) - uint96 (officeSold);
+        office.amountRemaianing = uint32 (remain);
+        emit Approver(msg.sender);
+    }
+
+    function headquaterUpdate(uint128 _totalReceived, uint128 _distributed) external onlySuperAdmin{
+        Headquater storage head = headquaterTracker[msg.sender];
+        uint256 total = head.totalReceived + _totalReceived;
+        head.totalReceived = total;
+        uint128 distributed = head.distributed + _distributed;
+        head.distributed = distributed;
+        uint256 remaining = uint256 (total) - uint128 (distributed);
+        head.amountRemaianing = uint128 (remaining);
     }
 
     function checkMember() internal view returns (bool status) {
