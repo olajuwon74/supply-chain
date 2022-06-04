@@ -3,8 +3,8 @@ pragma solidity ^0.8.7;
 
 contract Supply{
 
-    // address immutable general = 0x5B38Da6a701c568545dCfcB03FcB875f56beddC4;
-    address public superAdmin;
+    address immutable general = 0x5B38Da6a701c568545dCfcB03FcB875f56beddC4;
+    address superAdmin;
 
     error NotApproved();
 
@@ -32,6 +32,7 @@ contract Supply{
     mapping (uint => Office) public officeTracker;
     mapping (address => Headquater) public headquaterTracker;
     event Approver(address approversAddress);
+    event AddressAdded(address youAreAdded);
 
 
     modifier onlySuperAdmin(){
@@ -46,9 +47,15 @@ contract Supply{
         index = index + 1;
     }
 
+    function updateOfficeAddress(address include) external onlySuperAdmin{
+       Office storage office = officeTracker[index]; 
+       office.accredictedAddresses.push(include);
+       emit AddressAdded(include);
+    }
+
     function update(uint128 _totalReceived, uint96 _totalSold) external {
         Office storage office = officeTracker[index];
-        assert(checkMember());
+        assert(checkAddress());
         uint128 officeTotal = office.totalReceived + _totalReceived;
         office.totalReceived = officeTotal;
         uint96 officeSold = office.totalSold + _totalSold;
@@ -68,7 +75,7 @@ contract Supply{
         head.amountRemaianing = uint128 (remaining);
     }
 
-    function checkMember() internal view returns (bool status) {
+    function checkAddress() internal view returns (bool status) {
         status;
         Office storage office = officeTracker[index];
         for (uint256 i; i < office.accredictedAddresses.length; i++) {
