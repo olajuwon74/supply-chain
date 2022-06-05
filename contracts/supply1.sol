@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0
-pragma solidity ^0.8.7;
+pragma solidity ^0.8.8;
 
 contract Supply{
 
@@ -7,6 +7,7 @@ contract Supply{
     address superAdmin;
 
     error NotApproved();
+    error NotCaller();
 
     constructor(address _superAdmin){
         superAdmin = _superAdmin;
@@ -100,6 +101,7 @@ contract Supply{
         Office storage office = officeTracker[_index];
         for (uint256 i; i < office.accredictedAddresses.length; i++) {
             if (office.accredictedAddresses[i] == msg.sender) status = true;
+            else revert NotCaller();
         }
     }
 
