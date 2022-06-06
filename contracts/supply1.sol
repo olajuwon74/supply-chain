@@ -48,12 +48,6 @@ contract Supply{
         index++;
     }
 
-    // function updateOfficeAddress(address include) external onlySuperAdmin{
-    //    Office storage office = officeTracker[index]; 
-    //    office.accredictedAddresses.push(include);
-    //    emit AddressAdded(include);
-    // }
-
     function addAccreditedAddress(address _newAddress, uint256 _index) external onlySuperAdmin{
         Office storage office = officeTracker[_index];
         office.accredictedAddresses.push(_newAddress);
